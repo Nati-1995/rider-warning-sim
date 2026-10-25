@@ -1,0 +1,146 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Grass.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/road/protos/StraightRoadSegment.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/vehicles/protos/bmw/BmwX5Simple.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/vehicles/protos/generic/ScooterSimple.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/vehicles/protos/generic/MotorbikeSimple.proto"
+
+WorldInfo {
+  info [
+    "CEN451 Capstone I, rider warning test"
+    "A parked car with a rear radar and camera, delivery bikes pass it like the competition test"
+  ]
+  title "Rider warning test"
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation 0.0964 0.0103 -0.9953 2.9297
+  position 17 4.5 6.5
+  near 0.5
+}
+DEF BACKGROUND TexturedBackground {
+  texture "noon_cloudy_countryside"
+}
+DEF BACKGROUND_LIGHT TexturedBackgroundLight {
+  texture "noon_cloudy_countryside"
+}
+Floor {
+  translation -50 0 -0.02
+  size 400 80
+  appearance Grass {
+  }
+}
+StraightRoadSegment {
+  translation -160 0 0.01
+  name "test road"
+  width 7
+  numberOfLanes 2
+  length 220
+}
+DEF CAR BmwX5Simple {
+  translation 0 -2.28 0.4
+  name "parked car"
+  sensorsSlotTop [
+    Pose {
+      translation 0 0 0.12
+      children [
+        Shape {
+          appearance DEF LAMP PBRAppearance {
+            baseColor 0.25 0.25 0.25
+            roughness 0.4
+            metalness 0
+            emissiveColor 0 0 0
+          }
+          geometry Sphere {
+            radius 0.14
+          }
+        }
+      ]
+    }
+  ]
+}
+DEF RIG Robot {
+  translation -1.05 -2.28 0.6
+  rotation 0 0 1 3.14159
+  name "sensor rig"
+  controller "rider_warning_test"
+  controllerArgs [
+    "--light=day"
+    "--passes=10"
+    "--speeds=20,40,60"
+    "--detector=recognition"
+    "--noise=on"
+    "--hand-test=on"
+  ]
+  supervisor TRUE
+  children [
+    Radar {
+      name "rear radar"
+      maxRange 100
+      horizontalFieldOfView 0.7
+      verticalFieldOfView 0.17
+      minRadialSpeed 0
+      maxRadialSpeed 0
+      minAbsoluteRadialSpeed 0.5
+      rangeNoise 0.23
+      speedNoise 0.09
+      angularNoise 0.035
+      frequency 77
+      minDetectableSignal -120
+    }
+    Pose {
+      translation 0 0 0.5
+      children [
+        Camera {
+          name "rear camera"
+          fieldOfView 1.0472
+          width 1280
+          height 720
+          recognition Recognition {
+            maxRange 100
+            frameThickness 0
+          }
+        }
+      ]
+    }
+  ]
+}
+DEF SCOOTER Solid {
+  translation -500 -0.4 0
+  name "delivery scooter"
+  model "delivery scooter"
+  children [
+    Pose {
+      translation -1.75 0 0
+      children [
+        ScooterSimple {
+          primaryColor 0.95 0.75 0.05
+          secondaryColor 0.2 0.2 0.2
+          recognitionColors [ 0.95 0.75 0.05 ]
+          name "scooter body"
+        }
+      ]
+    }
+  ]
+}
+DEF MOTORBIKE Solid {
+  translation -520 -0.4 0
+  name "delivery motorbike"
+  model "delivery motorbike"
+  children [
+    Pose {
+      translation -2.05 0 0
+      children [
+        MotorbikeSimple {
+          primaryColor 0.1 0.25 0.6
+          recognitionColors [ 0.1 0.25 0.6 ]
+          name "motorbike body"
+        }
+      ]
+    }
+  ]
+}
